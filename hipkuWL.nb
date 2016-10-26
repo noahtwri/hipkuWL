@@ -1,0 +1,685 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     30556,        677]
+NotebookOptionsPosition[     30182,        658]
+NotebookOutlinePosition[     30512,        673]
+CellTagsIndexPosition[     30469,        670]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"data", " ", "=", " ", 
+   RowBox[{"Import", "[", 
+    RowBox[{"\"\<hipkuData.json\>\"", ",", "\"\<RawJSON\>\""}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"OCTET", " ", "=", " ", "\"\<OCTET\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"newline", " ", "=", " ", "\"\<\\n\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"period", " ", "=", " ", "\"\<.\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"space", " ", "=", " ", "\"\< \>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"punctuation", " ", "=", " ", 
+    RowBox[{"{", 
+     RowBox[{"newline", ",", " ", "period", ",", " ", "space"}], "}"}]}], 
+   ";"}], "\n", "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Utility", " ", "functions"}], "\[NonBreakingSpace] ", "*)"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"validateIP", "[", "ip_", "]"}], " ", ":=", " ", 
+   RowBox[{
+    RowBox[{"Interpreter", "[", "\"\<IPAddress\>\"", "]"}], "[", "ip", 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"IPv4", "[", "ip_", "]"}], " ", ":=", " ", 
+   RowBox[{"StringContainsQ", "[", 
+    RowBox[{"ip", ",", " ", "\"\<.\>\""}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"IPv6", "[", "ip_", "]"}], " ", ":=", " ", 
+   RowBox[{"StringContainsQ", "[", 
+    RowBox[{"ip", ",", " ", "\"\<:\>\""}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"padOctets", "[", 
+     RowBox[{"octets_", ",", " ", "missing_"}], "]"}], " ", ":=", " ", "1"}], 
+   ";"}], "\n", "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Encoding", " ", "functions"}], " ", "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"splitIP", "[", 
+     RowBox[{
+     "ip_", ",", " ", "delimiter_", ",", " ", "stdOctets_", ",", " ", 
+      "base_"}], "]"}], " ", ":=", " ", 
+    RowBox[{
+    "(", "\n", 
+     "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+     RowBox[{
+      RowBox[{
+      "octets", " ", "=", " ", "\n", 
+       "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"FromDigits", "[", 
+          RowBox[{"#", ",", " ", "base"}], "]"}], " ", "&"}], " ", "/@", " ", 
+        
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"ToString", "[", "#", "]"}], " ", "&"}], " ", "/@", " ", 
+          "\n", "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+          RowBox[{"StringSplit", "[", 
+           RowBox[{"ip", ",", " ", "delimiter"}], "]"}]}], ")"}]}]}], ";", 
+      "\n", "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+         "TODO", "\n", 
+          "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", "nOctets"}], " ", "=", " ", 
+         RowBox[{"Length", "[", "octets", "]"}]}], ";", "\n", 
+        "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"nOctets", "<", "stdOctets"}], ",", "\n", 
+          "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"IPv6", "[", "ip", "]"}], ",", "\n", 
+            "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+            RowBox[{
+             RowBox[{"octets", " ", "=", " ", 
+              RowBox[{"padOctets", "[", 
+               RowBox[{"octets", ",", " ", 
+                RowBox[{"stdOctets", "-", "nOctets"}]}], "]"}]}], ";"}]}], 
+           "\n", "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", "]"}]}], "\n", 
+         "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", "]"}], ";"}], "\n", 
+       "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", "*)"}], "\n", 
+      "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", "octets"}], "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", ")"}]}], ";"}], "\n"}], "\n", 
+
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"factorOctets", "[", 
+     RowBox[{"octets_", ",", " ", "divisor_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"(", "\n", "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"QuotientRemainder", "[", 
+         RowBox[{"#", ",", " ", "divisor"}], "]"}], " ", "&"}], " ", "/@", 
+       " ", "octets"}], "]"}], "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", ")"}]}], ";"}], "\n"}], "\n", 
+
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"encodeWords", "[", 
+     RowBox[{"factoredOctets_", ",", " ", "dictionary_"}], "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"(", "\n", "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{
+      RowBox[{"encoded", " ", "=", " ", 
+       RowBox[{"{", "}"}]}], ";", "\n", 
+      "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+      RowBox[{"For", "[", 
+       RowBox[{
+        RowBox[{"i", " ", "=", " ", "1"}], ",", " ", 
+        RowBox[{"i", " ", "<", " ", 
+         RowBox[{
+          RowBox[{"Length", "[", "factoredOctets", "]"}], " ", "+", " ", 
+          "1"}]}], ",", " ", 
+        RowBox[{"i", "++"}], ",", "\n", 
+        "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+        RowBox[{
+         RowBox[{
+         "encoded", " ", "=", " ", "\n", 
+          "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", 
+          RowBox[{"Append", "[", 
+           RowBox[{"encoded", ",", " ", 
+            RowBox[{
+             RowBox[{"dictionary", "[", 
+              RowBox[{"[", "i", "]"}], "]"}], "[", 
+             RowBox[{"[", " ", 
+              RowBox[{
+               RowBox[{"factoredOctets", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], " ", "+", " ", "1"}], " ", 
+              "]"}], "]"}]}], " ", "]"}]}], ";"}]}], "\n", 
+       "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], 
+      ";", "\n", "\[NonBreakingSpace]\[NonBreakingSpace] ", "encoded"}], "\n",
+      "\[NonBreakingSpace]\[NonBreakingSpace] ", ")"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"hipkuEncode", "[", "ip_", "]"}], " ", ":=", " ", 
+    RowBox[{
+    "(", "\n", 
+     "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+     RowBox[{
+      RowBox[{"validateIP", "[", "ip", "]"}], ";", "\n", 
+      "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"IPv6", "[", "ip", "]"}], ",", "\n", 
+        "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", 
+        RowBox[{
+         RowBox[{"divisor", " ", "=", " ", "256"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"delimiter", " ", "=", " ", "\"\<:\>\""}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"stdOctets", " ", "=", " ", "8"}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"base", " ", "=", " ", "16"}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"dictionary", " ", "=", " ", 
+          RowBox[{"{", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", " ", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<nouns\>\"", "]"}], "]"}], ",", " ", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", " ", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<nouns\>\"", "]"}], "]"}], ",", " ", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<verbs\>\"", "]"}], "]"}], ",", " ", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]    ", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", " ", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", " ", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]    ", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<nouns\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<nouns\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<verbs\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<adjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<nouns\>\"", "]"}], "]"}]}], "}"}]}], ";", "\n",
+          "\[IndentingNewLine]", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"template", " ", "=", " ", 
+          RowBox[{"{", 
+           RowBox[{
+           "OCTET", ",", " ", "OCTET", ",", " ", "\"\<and\>\"", ",", " ", 
+            "OCTET", ",", " ", "OCTET", ",", " ", "newline", ",", " ", 
+            "OCTET", ",", " ", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", "OCTET", ",", " ", "OCTET", ",", 
+            " ", "OCTET", ",", " ", "OCTET", ",", " ", "OCTET", ",", " ", 
+            "OCTET", ",", " ", "period", ",", " ", "newline", ",", " ", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", "OCTET", ",", " ", "OCTET", ",", 
+            " ", "OCTET", ",", " ", "OCTET", ",", " ", "OCTET", ",", " ", 
+            "period", ",", " ", "newline"}], "}"}]}], ";"}], "\n", 
+        "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", ",", "\n", 
+        "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+        RowBox[{
+         RowBox[{"divisor", " ", "=", " ", "16"}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"delimiter", " ", "=", " ", "\"\<.\>\""}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"stdOctets", " ", "=", " ", "4"}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"base", " ", "=", " ", "10"}], ";", "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"dictionary", " ", "=", " ", 
+          RowBox[{"{", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<animalAdjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<animalColors\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<animalNouns\>\"", "]"}], "]"}], ",", " ", "\n",
+             "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]    ", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<animalVerbs\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<natureAdjectives\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<natureNouns\>\"", "]"}], "]"}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<plantNouns\>\"", "]"}], "]"}], ",", " ", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]    ", 
+            RowBox[{"data", "[", 
+             RowBox[{"[", "\"\<plantVerbs\>\"", "]"}], "]"}]}], "}"}]}], ";", 
+         "\n", "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", 
+         RowBox[{"template", " ", "=", " ", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<The\>\"", ",", " ", "OCTET", ",", " ", "OCTET", ",", " ", 
+            "OCTET", ",", " ", "newline", ",", " ", "OCTET", ",", " ", 
+            "\"\<in the\>\"", ",", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "OCTET", ",", 
+            " ", "OCTET", ",", " ", "period", ",", " ", "newline", ",", " ", 
+            "OCTET", ",", " ", "OCTET", ",", " ", "period", ",", " ", 
+            "newline"}], "}"}]}], ";"}]}], "\n", 
+       "\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] \[NonBreakingSpace]", "]"}], ";", "\n",
+       "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+      RowBox[{"octets", " ", "=", " ", 
+       RowBox[{"splitIP", "[", 
+        RowBox[{
+        "ip", ",", " ", "delimiter", ",", " ", "stdOctets", ",", " ", 
+         "base"}], "]"}]}], ";", "\n", 
+      "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+      RowBox[{"factoredOctets", " ", "=", " ", 
+       RowBox[{"factorOctets", "[", 
+        RowBox[{"octets", ",", " ", "divisor"}], "]"}]}], ";", "\n", 
+      "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+      RowBox[{"encoded", " ", "=", " ", 
+       RowBox[{"encodeWords", "[", 
+        RowBox[{"factoredOctets", ",", " ", "dictionary"}], "]"}]}], ";", 
+      "\n", "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+      RowBox[{"formattedHaiku", " ", "=", " ", 
+       RowBox[{"formatHaiku", "[", 
+        RowBox[{"encoded", ",", " ", "template"}], "]"}]}], ";", "\n", 
+      "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+      RowBox[{"\"\<<pre>\>\"", " ", "<>", " ", 
+       RowBox[{"StringJoin", "[", "formattedHaiku", "]"}], " ", "<>", " ", 
+       "\"\<</pre>\>\""}]}], "\n", "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     ")"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"formatHaiku", "[", 
+    RowBox[{"encoded_", ",", " ", "template_"}], "]"}], " ", ":=", " ", 
+   RowBox[{"(", "\n", "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+    RowBox[{"(*", " ", 
+     RowBox[{"evaluate", " ", "template"}], " ", "*)"}], "\n", 
+    "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+    RowBox[{
+     RowBox[{"haiku", " ", "=", " ", "template"}], ";", "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{"For", "[", 
+      RowBox[{
+       RowBox[{"i", " ", "=", " ", "1"}], ",", " ", 
+       RowBox[{"i", " ", "<", " ", 
+        RowBox[{
+         RowBox[{"Length", "[", "encoded", "]"}], " ", "+", " ", "1"}]}], ",",
+        " ", 
+       RowBox[{"i", "++"}], ",", "\n", 
+       "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+       RowBox[{
+        RowBox[{"For", "[", 
+         RowBox[{
+          RowBox[{"j", " ", "=", " ", "1"}], ",", " ", 
+          RowBox[{"j", " ", "<", " ", 
+           RowBox[{
+            RowBox[{"Length", "[", "template", "]"}], " ", "+", " ", "1"}]}], 
+          ",", " ", 
+          RowBox[{"j", "++"}], ",", "\n", 
+          "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"haiku", "[", 
+               RowBox[{"[", "j", "]"}], "]"}], " ", "==", " ", "OCTET"}], ",",
+              "\n", "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] \
+", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"haiku", "[", 
+                RowBox[{"[", "j", "]"}], "]"}], " ", "=", " ", 
+               RowBox[{"encoded", "[", 
+                RowBox[{"[", "i", "]"}], "]"}]}], ";", "\n", 
+              "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] \
+", 
+              RowBox[{"Break", "[", "]"}], ";"}]}], "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] \
+", "]"}], ";"}]}], "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], ";"}]}], "\n", 
+      "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], 
+     ";", "\n", "\[NonBreakingSpace] \[NonBreakingSpace]", "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{"(*", " ", "spacing", " ", "*)"}], "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{"For", "[", 
+      RowBox[{
+       RowBox[{"i", " ", "=", " ", "2"}], ",", " ", 
+       RowBox[{"i", " ", "<", " ", 
+        RowBox[{"Length", "[", "haiku", "]"}]}], ",", " ", 
+       RowBox[{"i", "++"}], ",", "\n", 
+       "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+       RowBox[{
+        RowBox[{"insertSpace", " ", "=", " ", "True"}], ";", "\n", 
+        "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"MemberQ", "[", 
+           RowBox[{"punctuation", ",", " ", 
+            RowBox[{"haiku", "[", 
+             RowBox[{"[", "i", "]"}], "]"}]}], " ", "]"}], ",", " ", 
+          RowBox[{"insertSpace", " ", "=", " ", "False"}]}], "]"}], ";", "\n",
+         "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"haiku", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", " ", "-", " ", "1"}], "]"}], "]"}], " ", "==", " ", 
+           "newline"}], ",", " ", 
+          RowBox[{"insertSpace", " ", "=", " ", "False"}]}], "]"}], ";", "\n",
+         "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+         "insertSpace", ",", "\n", 
+          "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] ", 
+          RowBox[{
+           RowBox[{"haiku", " ", "=", " ", 
+            RowBox[{
+            "Insert", "[", "\n", 
+             "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+             RowBox[{"haiku", ",", " ", "space", ",", " ", "i"}], "\n", 
+             "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}]}], ";", 
+           "\n", "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] ", 
+           RowBox[{"i", "++"}], ";"}]}], "\n", 
+         "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] ", "]"}], ";"}]}], "\n", 
+      "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], 
+     ";", "\n", "\[NonBreakingSpace] \[NonBreakingSpace]", "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{"(*", " ", "capitalization", " ", "*)"}], "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", 
+     RowBox[{
+      RowBox[{"haiku", "[", 
+       RowBox[{"[", "1", "]"}], "]"}], " ", "=", " ", 
+      RowBox[{"Capitalize", "[", 
+       RowBox[{"haiku", "[", 
+        RowBox[{"[", "1", "]"}], "]"}], "]"}]}], ";", "\n", 
+     "\[NonBreakingSpace] \[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace] \[NonBreakingSpace]", 
+     RowBox[{"For", "[", 
+      RowBox[{
+       RowBox[{"i", " ", "=", " ", "1"}], ",", " ", 
+       RowBox[{"i", " ", "<", " ", 
+        RowBox[{
+         RowBox[{"Length", "[", "haiku", "]"}], " ", "+", " ", "1"}]}], ",", 
+       " ", 
+       RowBox[{"i", "++"}], ",", "\n", 
+       "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"haiku", "[", 
+            RowBox[{"[", "i", "]"}], "]"}], " ", "==", " ", "period"}], ",", 
+          "\n", "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", 
+          RowBox[{
+           RowBox[{
+           "nextIsWord", " ", "=", " ", "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+            RowBox[{"And", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"i", " ", "+", " ", "2"}], " ", "<", " ", 
+               RowBox[{
+                RowBox[{"Length", "[", "haiku", "]"}], " ", "+", " ", "1"}]}],
+               ",", " ", 
+              RowBox[{"StringQ", "[", 
+               RowBox[{"haiku", "[", 
+                RowBox[{"[", 
+                 RowBox[{"i", " ", "+", " ", "2"}], "]"}], "]"}], "]"}]}], 
+             "]"}]}], ";", "\n", 
+           "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"And", "[", 
+              RowBox[{"nextIsWord", ",", " ", 
+               RowBox[{"Not", "[", 
+                RowBox[{"MemberQ", "[", 
+                 RowBox[{"punctuation", ",", " ", 
+                  RowBox[{"haiku", "[", 
+                   RowBox[{"[", 
+                    RowBox[{"i", " ", "+", " ", "2"}], "]"}], "]"}]}], " ", 
+                 "]"}], "]"}]}], "]"}], ",", "\n", 
+             "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"haiku", "[", 
+                RowBox[{"[", 
+                 RowBox[{"i", " ", "+", " ", "2"}], "]"}], "]"}], " ", "=", 
+               " ", 
+               RowBox[{"Capitalize", "[", 
+                RowBox[{"haiku", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"i", " ", "+", " ", "2"}], "]"}], "]"}], "]"}]}], 
+              ";"}]}], "\n", 
+            "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], ";"}]}], 
+         "\n", "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace]\
+\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], ";"}]}], "\n", 
+      "\[NonBreakingSpace]\[NonBreakingSpace]\[NonBreakingSpace] ", "]"}], 
+     ";", "\n", "\[NonBreakingSpace] \[NonBreakingSpace]", "\n", 
+     "\[NonBreakingSpace]\[NonBreakingSpace] ", "haiku"}], "\n", 
+    "\[NonBreakingSpace]\[NonBreakingSpace] ", ")"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.686322952284919*^9, 3.686322981217225*^9}, {
+   3.686323281063924*^9, 3.686323284794475*^9}, {3.68632335606526*^9, 
+   3.686323578801375*^9}, {3.686323710641553*^9, 3.686323805937561*^9}, {
+   3.686324030917798*^9, 3.6863240321130743`*^9}, {3.6863240927777977`*^9, 
+   3.686324109014573*^9}, {3.68632419669523*^9, 3.6863242190023117`*^9}, {
+   3.686324298419157*^9, 3.686324309276196*^9}, {3.686324377223626*^9, 
+   3.686324377856701*^9}, {3.686325375310513*^9, 3.686325375868436*^9}, 
+   3.6863255669350863`*^9, {3.686325665996443*^9, 3.686325679196642*^9}, {
+   3.6863257797090483`*^9, 3.686325859521039*^9}, {3.686409794477613*^9, 
+   3.686409798636702*^9}, {3.686414891803911*^9, 3.686414918022666*^9}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"CloudDeploy", "[", "\n", 
+   RowBox[{"FormPage", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\"\<ip\>\"", "\[Rule]", 
+       RowBox[{"<|", 
+        RowBox[{
+         RowBox[{"\"\<Interpreter\>\"", "->", "\"\<IPAddress\>\""}], ",", " ", 
+         RowBox[{"\"\<Input\>\"", "\[RuleDelayed]", "$RequesterAddress"}]}], 
+        "|>"}]}], "}"}], ",", "\n", 
+     RowBox[{
+      RowBox[{"hipkuEncode", "[", "#ip", "]"}], "&"}], ",", " ", "\n", 
+     RowBox[{"AppearanceRules", "\[Rule]", 
+      RowBox[{"<|", 
+       RowBox[{
+        RowBox[{"\"\<Title\>\"", "\[Rule]", "\"\<HipkuWL\>\""}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+        "\"\<Description\>\"", "\[Rule]", 
+         "\"\<Enter an IP address, get the <a \
+href='http://gabrielmartin.net/projects/hipku/' target='_BLANK'>Hipku</a> \
+encoding.  Learn <a href='http://community.wolfram.com/groups/-/m/t/949747'  \
+target='_BLANK'>how it works</a>.\>\""}], ",", " ", "\[IndentingNewLine]", 
+        RowBox[{"Permissions", "\[Rule]", "\"\<Public\>\""}]}], "|>"}]}]}], 
+    "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]", "]"}], 
+  "\n"}]], "Input",
+ CellChangeTimes->{{3.686323006929225*^9, 3.6863230090482903`*^9}, {
+   3.6863258622032433`*^9, 3.686325864594576*^9}, {3.686325969795847*^9, 
+   3.686326026963725*^9}, {3.686326159812009*^9, 3.6863261914666653`*^9}, {
+   3.686326353731078*^9, 3.686326421274543*^9}, {3.686326455203463*^9, 
+   3.6863264892345552`*^9}, {3.6863265223312683`*^9, 3.686326584529809*^9}, {
+   3.686326639734296*^9, 3.686326640058563*^9}, {3.686327483594112*^9, 
+   3.686327510065466*^9}, 3.6863276013846197`*^9, {3.68632776707161*^9, 
+   3.686327836224127*^9}, {3.6863279392959843`*^9, 3.68632796943209*^9}, {
+   3.686328081105446*^9, 3.686328090798802*^9}, {3.686329394509487*^9, 
+   3.6863293962844353`*^9}, {3.686329428828979*^9, 3.686329469196946*^9}, {
+   3.6863296789733458`*^9, 3.686329707380577*^9}, {3.6863297744610367`*^9, 
+   3.686329894195937*^9}, {3.6863313492963867`*^9, 3.686331434247531*^9}, {
+   3.686408777175268*^9, 3.686408821295885*^9}, {3.6864098083009577`*^9, 
+   3.686409809957308*^9}, 3.686410438644491*^9, {3.686410551521797*^9, 
+   3.6864107144551477`*^9}, 3.686410745224368*^9, {3.6864146718568087`*^9, 
+   3.686414679489603*^9}, {3.686414763908717*^9, 3.6864147673846493`*^9}, 
+   3.686414821104103*^9, {3.686414946938736*^9, 3.6864149491913977`*^9}},
+ CellID->105],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"CloudObject", "[", 
+   TagBox[
+    ButtonBox[
+     PaneSelectorBox[{
+      False->"\<\"https://www.wolframcloud.com/objects/1bf730d9-8091-40b5-\
+9915-ace06e0a7f75\"\>", True->
+      StyleBox["\<\"https://www.wolframcloud.com/objects/1bf730d9-8091-40b5-\
+9915-ace06e0a7f75\"\>", "HyperlinkActive"]}, Dynamic[
+       CurrentValue["MouseOver"]],
+      BaseStyle->{"Hyperlink"},
+      FrameMargins->0,
+      ImageSize->Automatic],
+     BaseStyle->"Hyperlink",
+     ButtonData->{
+       URL[
+       "https://www.wolframcloud.com/objects/1bf730d9-8091-40b5-9915-\
+ace06e0a7f75"], None},
+     ButtonNote->
+      "https://www.wolframcloud.com/objects/1bf730d9-8091-40b5-9915-\
+ace06e0a7f75"],
+    Annotation[#, 
+     "https://www.wolframcloud.com/objects/1bf730d9-8091-40b5-9915-\
+ace06e0a7f75", "Hyperlink"]& ], "]"}],
+  CloudObject[
+  "https://www.wolframcloud.com/objects/1bf730d9-8091-40b5-9915-ace06e0a7f75"],
+  SelectWithContents->True]], "Output",
+ CellChangeTimes->{{3.6863313893919888`*^9, 3.6863314024205303`*^9}, 
+   3.686408794627974*^9, 3.68640882490277*^9, {3.686409813760854*^9, 
+   3.686409819064211*^9}, 3.6864104431584387`*^9, {3.686410571440423*^9, 
+   3.686410579458393*^9}, {3.686410662840707*^9, 3.686410693369088*^9}, 
+   3.686410750675606*^9, {3.686414790906145*^9, 3.68641479205116*^9}, 
+   3.686414829788837*^9, {3.68641492427462*^9, 3.686414951785887*^9}}]
+}, Open  ]]
+},
+WindowSize->{1680, 1002},
+WindowMargins->{{0, Automatic}, {54, 24}},
+FrontEndVersion->"10.3 for Linux x86 (64-bit) (October 9, 2015)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 25720, 551, 2968, "Input",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[26303, 575, 2440, 45, 273, "Input",
+ CellID->105],
+Cell[28746, 622, 1420, 33, 69, "Output"]
+}, Open  ]]
+}
+]
+*)
+
